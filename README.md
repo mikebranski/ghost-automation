@@ -19,10 +19,15 @@ issues or pull requests if you see room for improvement!
 
 # Getting Started
 
-1. Edit the following files:
+1. Set up a server with SSH access for the root user.
+
+2. Add your public key so you can SSH without a password. I like [`ssh-copy-id`](http://askubuntu.com/questions/4830/easiest-way-to-copy-ssh-keys-to-another-machine) (OS X, Linux).
+
+3. Edit the following files:
 
   - `./group_vars/ghost.yaml`  
-    Add each of your sites - along with a unique port number - to the `sites:` defition, following the template provided.
+    Add each of your sites - along with a unique port number - to the `sites:` 
+    defition, following the template provided.
   - `ghost-config.js.j2`  
     This is the Ghost config that will be used for each site. The domain and 
   port will be inserted automatically from `group_vars/ghost.yaml`, but 
@@ -30,13 +35,14 @@ issues or pull requests if you see room for improvement!
   - `hosts`  
     Replace the example IP with the address of your server.
   - `vhost.conf`  
-    This is the virtualhost config template that will be used for each site. Note the URL redirect at the bottom.
+    This is the virtualhost config template that will be used for each site.
+    Note the URL redirect at the bottom.
 
-2. Next, run `./bin/server` to set up the necessary pieces on the server. You
+4. Next, run `./bin/server` to set up the necessary pieces on the server. You
 should only have to do this once, but it is idempotent and can be run as many 
 times as you need.
 
-3. Run `./bin/sites` once to set up each of the sites specified in
+5. Run `./bin/sites` once to set up each of the sites specified in
 `./group_vars/ghost.yaml`. As with `server`, you can run this
 multiple times without ill effect. While it __won't__ touch
 your content directory, making a backup is always a good
@@ -50,4 +56,5 @@ Just some things I referenced while setting this up.
 - [Ansible - Intro to Playbooks](http://docs.ansible.com/playbooks_intro.html)
 - [Ansible - nginx + WordPress Examples](https://github.com/ansible/ansible-examples/blob/master/wordpress-nginx/group_vars/all)
 
-Finally, much :heart: to the Ghost team for creating this awesome platform, and to Ansible for being badass as always. :+1:
+Finally, much :heart: to the Ghost team for creating this awesome platform, 
+and to Ansible for being badass as always. :+1:
