@@ -1,0 +1,17 @@
+# ghost-{{item.domain}}
+
+start on startup
+stop on shutdown
+
+# Starts Ghost
+script
+    cd /var/www/{{item.domain}}/ghost
+    npm start --production
+end script
+
+# Detect if the process was ended unexpectedly, and attempt to restart it no
+# more than 10 times, waiting 5 seconds between each.
+#
+# http://upstart.ubuntu.com/cookbook/#respawn
+respawn
+respawn limit 10 5

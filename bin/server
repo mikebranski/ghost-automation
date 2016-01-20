@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+# Where our playbooks live. In this case, one directory up from this script.
+playbooks_dir = File.expand_path File.dirname(__FILE__) + '/..'
+
+Dir.chdir playbooks_dir do
+	# Tell Ansible to run the 'setup-server' playbook.
+	system "ansible-playbook", "setup-server.yaml"
+end

@@ -1,0 +1,5 @@
+; Each of your servers running Ghost.
+[ghost]
+; Put each of your server IP addresses on their own line here.
+; For example:
+123.456.78.90

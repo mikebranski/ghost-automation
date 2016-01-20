@@ -1,0 +1,96 @@
+---
+- hosts: ghost
+  tasks:
+
+  ##############################
+  # Sites
+  ##############################
+
+  - name: Sites | Disable default site
+    file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+
+  - name: Sites | Create vhost .conf files
+    template:
+      src: vhost.conf
+      dest: "/etc/nginx/sites-available/{{item.domain}}.conf"
+    with_items: sites
+
+  - name: Sites | Enable vhosts
+    file:
+      src: "/etc/nginx/sites-available/{{item.domain}}.conf"
+      dest: "/etc/nginx/sites-enabled/{{item.domain}}.conf"
+      state: link
+    with_items: sites
+    notify: nginx | Restart
+
+
+  ##############################
+  # Ghost
+  ##############################
+
+  # @todo Add upgrade detection.
+  #
+  # - name: Sites | Stop services in case we're upgrading
+  #   service:
+  #     name: "{{item}}"
+  #     state: stopped
+  #   with_items:
+  #     - ghost
+  #     - nginx
+
+  - name: Sites | Download Ghost
+    get_url:
+      url: https://ghost.org/zip/ghost-latest.zip
+      dest: ~/ghost.zip
+
+  - name: Sites | Ensure webroot exist
+    file:
+      path: "/var/www/{{item.domain}}/ghost"
+      state: directory
+    with_items: sites
+
+  # @todo DELETE ./ghost/core FIRST OR SHIT WILL BREAK.
+  #       https://github.com/TryGhost/Ghost/issues/5803
+  - name: Sites | Unarchive Ghost
+    unarchive:
+      src: ~/ghost.zip
+      dest: "/var/www/{{item.domain}}/ghost"
+      copy: no
+    with_items: sites
+
+  - name: Sites | Set-up Ghost config.js
+    template:
+      src: ghost-config.js.j2
+      dest: "/var/www/{{item.domain}}/ghost/config.js"
+    with_items: sites
+
+  - name: Sites | Install packages
+    npm:
+      path: "/var/www/{{item.domain}}/ghost"
+      production: yes
+    with_items: sites
+
+
+  ##############################
+  # Upstart
+  ##############################
+
+  - name: Sites | Create Upstart scripts
+    template:
+      src: upstart-site.conf.j2
+      dest: "/etc/init/ghost-{{item.domain}}.conf"
+    with_items: sites
+
+  - name: Sites | Start each Ghost site
+    service:
+      name: "ghost-{{item.domain}}"
+      state: restarted
+    with_items: sites
+
+
+  handlers:
+
+    - name: nginx | Restart
+      service: name=nginx state=restarted

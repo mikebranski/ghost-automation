@@ -1,0 +1,8 @@
+---
+ansible_ssh_user: root
+sites:
+  # Repeat this block for each site you want to set up. Note that `port` must
+  # be unique and not already in use on the destination server.
+  - domain: yoursite.com
+    port: 2345
+
